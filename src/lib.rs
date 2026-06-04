@@ -1,0 +1,10 @@
+pub mod config;
+pub mod error;
+pub mod library;
+pub mod media;
+pub mod model;
+pub mod player;
+pub mod provider;
+pub mod providers;
+pub mod standby;
+pub mod tui;

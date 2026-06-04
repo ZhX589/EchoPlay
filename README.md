@@ -1,49 +1,88 @@
-# EchoPlay 🎵
+<div align="center">
 
-> 终端里的音乐播放器，插件化架构，支持本地音乐和各大平台音源
+<img src="https://img.shields.io/badge/-EchoPlay-1a1a2e?style=for-the-badge&labelColor=1a1a2e&color=0f3460" alt="EchoPlay">
 
-## 特性
+### Terminal Music Player
 
-- 🖥️ 纯终端 TUI 界面，轻量快捷
-- 🔌 插件化设计，按需加载音源
-- 📁 本地音乐播放 (mp3/flac/wav/ogg)
-- 🌐 网络音源支持 (QQ音乐、网易云等，开发中)
-- 🎨 可定制主题
+<a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/Rust-2024-edition-orange?logo=rust&logoColor=white" alt="Rust"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT License"></a>
+<img src="https://img.shields.io/badge/Tests-74%20passed-brightgreen" alt="Tests">
+<img src="https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey" alt="Platform">
 
-## 快速开始
+---
 
-### 安装
+[**English**](README.en.md) · [**简体中文**](README.zh.md)
 
-```bash
-cargo install --git https://github.com/yourname/echoplay
+</div>
+
+---
+
+## Highlights
+
+```
+ Plugin Architecture        Local Playback          Online Sources
+┌─────────────────┐    ┌──────────────────┐    ┌──────────────────┐
+│  Provider Trait  │    │  mp3 flac wav    │    │    QQ Music      │
+│  One Interface   │    │  ogg m4a aac     │    │  Search + Lyrics │
+│  Extensible      │    │  Tag Reader      │    │  RPC Gateway     │
+└─────────────────┘    └──────────────────┘    └──────────────────┘
 ```
 
-### 使用
+## Quick Start
 
 ```bash
-echoplay                    # 启动TUI
-echoplay --play ~/music     # 播放指定目录
-echoplay --help             # 查看帮助
+# Build
+git clone <repo-url> && cd EchoPlay
+cargo build --release
+
+# Run
+./target/release/EchoPlay                # Launch TUI
+./target/release/EchoPlay --play ~/Music # Play local directory
+./target/release/EchoPlay --search "周杰伦" # Search QQ Music
 ```
 
-## 快捷键
+## TUI Preview
 
-| 按键  | 功能          |
-| ----- | ------------- |
-| Space | 播放/暂停     |
-| ←/→   | 后退/前进5秒  |
-| ↑/↓   | 音量调节      |
-| n/p   | 下一首/上一首 |
-| q     | 退出          |
+```
+┌─ EchoPlay ─────────────────────────────────────────────┐
+│                    ┌────────────┐                       │
+│                    │  ▄▄████▄▄  │                       │
+│                    │  ▀▀████▀▀  │                       │
+│                    │  ▄▄████▄▄  │                       │
+│                    └────────────┘                       │
+│                   Song Title - Artist                   │
+│                        Album Name                       │
+│                                                        │
+│              1:23 ━━━━━━━━━━━━━━━━━ 4:56               │
+│                                                        │
+│            ⏮    ▶    ⏭   🔀  🔁  🔊80%                │
+│                                                        │
+│  ┌─ Lyrics ────────────────────────────────────────┐   │
+│  │           Previous lyric line                    │   │
+│  │      ★  Current lyric line (highlighted)  ★     │   │
+│  │             Next lyric line                      │   │
+│  └─────────────────────────────────────────────────┘   │
+└────────────────────────────────────────────────────────┘
+```
 
-## 配置文件
+## Keybindings
+
+| Key | Action | Key | Action |
+|-----|--------|-----|--------|
+| `Tab` | Show/hide tabs | `Space` | Play/Pause |
+| `1` `2` `3` | Switch view | `n` / `p` | Next / Previous |
+| `↑` `↓` | Navigate list | `+` `-` | Volume |
+| `Enter` | Play selected | `m` | Cycle play mode |
+| `/` | Search | `Esc` | Back |
+| `q` | Quit | | |
+
+## Configuration
 
 `~/.config/echoplay/config.toml`
 
 ```toml
 [audio]
 volume = 80
-device = "default"
 
 [library]
 scan_dirs = ["~/Music"]
@@ -52,10 +91,35 @@ scan_dirs = ["~/Music"]
 theme = "default"
 ```
 
-## 插件开发
+## Architecture
 
-详见 [PLUGINS.md](docs/PLUGINS.md)
+```
+Provider Trait  →  ProviderRegistry  →  Library (facade)
+     │                                        │
+     ├── QQProvider (QQ Music)                │
+     └── LocalProvider (local files)          │
+                                              ▼
+                              ┌──────────────────────────┐
+                              │        Player (rodio)     │
+                              │  play / pause / stop      │
+                              │  volume / seek            │
+                              └──────────────────────────┘
+                                              │
+                              ┌──────────────────────────┐
+                              │     TUI (ratatui)         │
+                              │  views / widgets / theme  │
+                              └──────────────────────────┘
+```
 
-## 许可证
+## Development
 
-MIT © ZhX589
+```bash
+cargo build                              # Build
+cargo test                               # Run all tests (74)
+cargo run -- --play ~/Music              # Test local playback
+cargo run -- --search "test"             # Test QQ Music search
+```
+
+## License
+
+[MIT](LICENSE)
